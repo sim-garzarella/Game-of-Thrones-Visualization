@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css?family=Asap:400,500,700');
+
+body {
+    background: linear-gradient(
+          rgba(0, 0, 0, 0.8), 
+          rgba(0, 0, 0, 0.8)
+        ),
+        /* bottom, image */
+        url("../data/images/got_wallpaper.jpg");
+    background-repeat: no-repeat;
+    background-size: 1900px 1000px;
+}
+
+.link {
+    fill: black;
+    stroke: #666;
+    stroke-width: 2px;
+}
+
+.node rect {
+    fill: #ccc;
+    stroke: #fff;
+    stroke-width: 2px;
+}
+  
+.text {
+    font: 30px sans-serif;
+    pointer-events: none;
+}
+
+.highlight.father {
+    opacity: 1 !important;
+    stroke: navy !important;
+    stroke-width: 3px !important;
+    stroke-opacity: 1 !important;
+}
+
+.legend_father {
+    fill: navy;
+}
+
+.highlight.mother {
+    opacity: 1 !important;
+    stroke: violet !important;
+    stroke-width: 3px !important;
+    stroke-opacity: 1 !important;
+}
+
+.legend_mother {
+    fill: violet;
+}
+
+.highlight.sibling {
+    opacity: 1 !important;
+    stroke: yellow !important;
+    stroke-width: 3px !important;
+    stroke-opacity: 1 !important;
+}
+
+.legend_sibling {
+    fill: yellow;
+}
+
+.highlight.allegiance {
+    opacity: 1 !important;
+    stroke: green !important;
+    stroke-width: 3px !important;
+    stroke-opacity: 1 !important;
+}
+
+.legend_allegiance {
+    fill: green;
+}
+
+.highlight.spouse {
+    opacity: 1 !important;
+    stroke: orange !important;
+    stroke-width: 3px !important;
+    stroke-opacity: 1 !important;
+}
+
+.legend_spouse {
+    fill: orange;
+}
+
+.highlight.killed {
+    opacity: 1 !important;
+    stroke: red !important;
+    stroke-width: 3px !important;
+    stroke-opacity: 1 !important;
+}
+
+.legend_killed {
+    fill: red;
+}
+
+.highlight.lover {
+    opacity: 1 !important;
+    stroke: lightblue !important;
+    stroke-width: 3px !important;
+    stroke-opacity: 1 !important;
+}
+
+.legend_lover {
+    fill: lightblue;
+}
