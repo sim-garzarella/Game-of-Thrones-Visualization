@@ -174,12 +174,12 @@ function gotVis() {
             .style("font-size", "25px")
             .style("visibility", "hidden");
 
-        var node_label = node.append("text")
+        /*var node_label = node.append("text")
             .attr("x", -7.5)
             .attr("dy", ".35em")
             .text(function(d) { return d.name[0]; })
             .style("fill", "grey")
-            .style("font-size", "25px");
+            .style("font-size", "25px");*/
 
         var nodeHouse = d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark")
             .append("text")

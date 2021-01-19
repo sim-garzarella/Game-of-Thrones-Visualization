@@ -30,13 +30,13 @@ body {
 
 .highlight.father {
     opacity: 1 !important;
-    stroke: navy !important;
+    stroke: royalblue !important;
     stroke-width: 3px !important;
     stroke-opacity: 1 !important;
 }
 
 .legend_father {
-    fill: navy;
+    fill: royalblue;
 }
 
 .highlight.mother {
@@ -63,13 +63,13 @@ body {
 
 .highlight.allegiance {
     opacity: 1 !important;
-    stroke: green !important;
+    stroke: seagreen !important;
     stroke-width: 3px !important;
     stroke-opacity: 1 !important;
 }
 
 .legend_allegiance {
-    fill: green;
+    fill: seagreen;
 }
 
 .highlight.spouse {
@@ -85,22 +85,22 @@ body {
 
 .highlight.killed {
     opacity: 1 !important;
-    stroke: red !important;
+    stroke: tomato !important;
     stroke-width: 3px !important;
     stroke-opacity: 1 !important;
 }
 
 .legend_killed {
-    fill: red;
+    fill: tomato;
 }
 
 .highlight.lover {
     opacity: 1 !important;
-    stroke: lightblue !important;
+    stroke: rosybrown !important;
     stroke-width: 3px !important;
     stroke-opacity: 1 !important;
 }
 
 .legend_lover {
-    fill: lightblue;
+    fill: rosybrown;
 }
