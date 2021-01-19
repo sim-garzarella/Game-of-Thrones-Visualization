@@ -189,7 +189,7 @@ function gotVis() {
             .text(function(d) { 
                 return d.house_birth; })
             .style("fill", "white")
-            .style("font-size", "20px")
+            .style("font-size", "17px")
             .style("visibility", "hidden");
 
         function tick() {
@@ -298,7 +298,7 @@ function gotVis() {
             
             svg.append("text")
                 .text(function(d) {
-                    if (element == "Brotherhood Without Banners") {   //TODO
+                    if (element == "Brotherhood Without Banners") {   //TODO mandare a capo
                         return element;
                     }
                     else return element;
@@ -328,7 +328,14 @@ function mouseover() {
         .transition()
         .duration(400)
         .attr("transform", "scale(1.5)")
-        .style("stroke","black");
+        .style("stroke",function(d) {
+            if (d.status=="Alive") {
+                return "green";
+            }
+            else {
+                return "red";
+            };
+        });
     var text = d3.select(this).select("text")
         .transition()
         .duration(400)
