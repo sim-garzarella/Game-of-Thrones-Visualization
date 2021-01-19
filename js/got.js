@@ -41,7 +41,6 @@ function gotVis() {
         })
         //deletes the duplicates
         var groups = deleteDuplicates(notUniqueGroups);
-        console.log(groups);
 
         /*
         // Array of characters' house-birth
@@ -182,6 +181,16 @@ function gotVis() {
             .style("fill", "grey")
             .style("font-size", "25px");
 
+        var nodeHouse = d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark")
+            .append("text")
+            .attr("class", "nodeHouseBirth")
+            .attr("x", 45)
+            .attr("y", 35)
+            .text(function(d) { 
+                return d.house_birth; })
+            .style("fill", "white")
+            .style("font-size", "20px")
+            .style("visibility", "hidden");
 
         function tick() {
             link
@@ -315,16 +324,20 @@ function mouseover() {
     var nodeId = thisNode.attr("id").toString().replace("node-", "");
     var linkCssClass = ".link.s" + nodeId + ",.link.t" + nodeId;
 
-    d3.select(this).select("circle, rect, polygon").transition()
+    d3.select(this).select("circle, rect, polygon")
+        .transition()
         .duration(400)
         .attr("transform", "scale(1.5)")
         .style("stroke","black");
-
-    var text = d3.select(this).select("text").transition()
+    var text = d3.select(this).select("text")
+        .transition()
         .duration(400)
         .attr("x","40")
         .style("visibility", "visible")
-        .style("font-size", "35px");       
+        .style("font-size", "35px"); 
+    d3.select(this).select(".nodeHouseBirth").transition()
+        .delay(400)
+        .style("visibility", "visible");
     d3.selectAll(linkCssClass)
         .classed("highlight", true)
         .transition()
@@ -345,13 +358,14 @@ function mouseout() {
         .duration(400)
         .attr("transform", "scale(1)")
         .style("stroke","white");
-
     d3.select(this).select("text").transition()
         .duration(400)
         .attr("x","30")
         .style("visibility", "hidden")
         .attr("fill", "black")
         .style("font-size", "25px");
+    d3.select(this).select(".nodeHouseBirth").transition()
+        .style("visibility", "hidden");
     d3.selectAll(".link")
         .classed("highlight", false)
         .transition()
