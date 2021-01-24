@@ -209,13 +209,23 @@ function gotVis() {
         svg.append("rect")
             .attr("x", 5)
             .attr("y", 10)
-            .attr("height", "300px")
+            .attr("height", "340px")
             .attr("width", "240px")
             .style("fill", "#4b493a")
             .attr('stroke', 'black')
             .attr('stroke-dasharray', '10,5')
             .attr('stroke-linecap', 'butt')
             .attr('stroke-width', '3');
+        
+        svg.append("text")
+            .text("Relations")
+            .attr("x", 65)
+            .attr("y", legend_height)
+            .style("font-size", "30px")
+            .style("border", 0.5)
+            .style("fill", "white");
+
+        legend_height += 40;
 
         relations.forEach(element => {
             svg.append("text")
@@ -234,7 +244,7 @@ function gotVis() {
         svg.append("rect")
             .attr("x", 5)
             .attr("y", legend_height)
-            .attr("height", "230px")
+            .attr("height", "290px")
             .attr("width", "240px")
             .style("fill", "#4b493a")
             .attr('stroke', 'black')
@@ -244,15 +254,28 @@ function gotVis() {
 
         legend_height += 40;
 
+        svg.append("text")
+            .text("Groups")
+            .attr("x", 75)
+            .attr("y", legend_height)
+            .style("font-size", "30px")
+            .style("border", 0.5)
+            .style("fill", "white");
+
+        legend_height += 40;
+
         groups.forEach(element => {
 
             recttHeight = legend_height-20;
             polygontHeight = legend_height - 10;
+
+            var originalElement = element;
+            element = element.replace(/\s+/g, '').replace(/'/, '');
             
-            if (element == "Brotherhood Without Banners") {
+            if (element == "BrotherhoodWithoutBanners") {
                 svg.append('rect')
                     .attr("x", 30)
-                    .attr("y", recttHeight)
+                    .attr("y", recttHeight + 10)
                     .attr("height", "20px")
                     .attr("width", "20px")
                     .style("fill", "#ccc")
@@ -260,7 +283,7 @@ function gotVis() {
                     .style("stroke-width", "2px");
             }
             
-            if (element =="Night's Watch") {
+            if (element =="NightsWatch") {
                 svg.append('polygon')    
                     .attr('points', "8,10 -8,10 -13,0 -8,-10 8,-10 13,0") //15,20 -15,20 -25,0 -15,-20 15,-20 25,0
                     .style("fill", "#ccc")
@@ -268,7 +291,7 @@ function gotVis() {
                     .style("stroke-width", "2px")
                     .attr("transform", "translate(40 " + polygontHeight + ")");
             }
-            if (element =="Free Folk") {
+            if (element =="FreeFolk") {
                 svg.append('polygon')
                     .attr('points', "12,9 0,-12 -12,9")
                     .style("fill", "#ccc")
@@ -276,7 +299,7 @@ function gotVis() {
                     .style("stroke-width", "2px")
                     .attr("transform", "translate(40 " + polygontHeight + ")");
             }
-            if (element =="Sand Snakes") {
+            if (element =="SandSnakes") {
                 svg.append('rect')
                     .attr("x", 32)
                     .attr("y", recttHeight)
@@ -286,7 +309,7 @@ function gotVis() {
                     .attr('stroke', '#fff')
                     .style("stroke-width", "2px");
             }
-            if (element =="House Stark") {
+            if (element =="HouseStark") {
                 svg.append('polygon')
                     .attr('points', "15,0 0,15 -15,0 0,-15")
                     .style("fill", "#ccc")
@@ -295,14 +318,36 @@ function gotVis() {
                     .attr("transform", "translate(40 " + polygontHeight + ")");
             }
 
-            
-            svg.append("text")
-                .text(function(d) {
-                    if (element == "Brotherhood Without Banners") {   //TODO mandare a capo
-                        return element;
-                    }
-                    else return element;
-                })
+            if (element == "BrotherhoodWithoutBanners") {
+                svg.append("text")
+                    .text("Brotherhood")
+                    .attr("class", "legend_" + element)
+                    .attr("x", 80)
+                    .attr("y", legend_height)
+                    .style("font-size", "23px")
+                    .style("border", 0.5)
+                    .style("fill", "#ccc")
+                    .on("mouseover", groupMouseover)
+                    .on("mouseout", groupMouseout);  
+                
+                legend_height += 20;
+
+                svg.append("text")
+                    .text("Without Banners")
+                    .attr("class", "legend_" + element)
+                    .attr("x", 80)
+                    .attr("y", legend_height)
+                    .style("font-size", "23px")
+                    .style("border", 0.5)
+                    .style("fill", "#ccc")
+                    .on("mouseover", groupMouseover)
+                    .on("mouseout", groupMouseout);  
+                
+                legend_height += 40;
+            }
+            else {
+                svg.append("text")
+                .text(originalElement)
                 .attr("class", "legend_" + element)
                 .attr("x", 80)
                 .attr("y", legend_height)
@@ -313,7 +358,7 @@ function gotVis() {
                 .on("mouseout", groupMouseout);    
 
             legend_height += 40;
-            
+            }  
         });
     });
 
@@ -407,6 +452,13 @@ function legend_mouseout() {
 
 function groupMouseover() {
     var groupNode = this.textContent.replace(/\s+/g, '').replace(/'/, '');
+    if (groupNode == "Brotherhood" | groupNode == "WithoutBanners") {
+        groupNode = "BrotherhoodWithoutBanners";
+
+        d3.selectAll(".legend_BrotherhoodWithoutBanners")
+            .style("fill","yellow");
+    }
+ 
     d3.select(this)
         .style("fill","yellow");
     d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark").transition()
@@ -423,6 +475,12 @@ function groupMouseover() {
 
 function groupMouseout() {
     var groupNode = this.textContent.replace(/\s+/g, '').replace(/'/, '');
+    if (groupNode == "Brotherhood" || groupNode == "WithoutBanners") {
+        groupNode = "BrotherhoodWithoutBanners";
+
+        d3.selectAll(".legend_BrotherhoodWithoutBanners")
+            .style("fill","#ccc");
+    }
     d3.select(this)
         .style("fill","#ccc");
     d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark").transition()
