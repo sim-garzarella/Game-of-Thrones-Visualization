@@ -3,8 +3,6 @@ var height = 900;
 
 var links = [];
 var nodes = [];
-var links2 = [];
-var nodes2 = [];
 
 var s, t = null;
 
@@ -29,7 +27,6 @@ function gotVis() {
         links.forEach(elem => {
             notUniqueRelations.push(elem.relation);
         })
-
         //deletes the duplicates
         var relations = deleteDuplicates(notUniqueRelations);   
 
@@ -43,15 +40,6 @@ function gotVis() {
         var groups = deleteDuplicates(notUniqueGroups);
 
         /*
-        // Array of characters' house-birth
-        var notUniquehouse_birth = [];    
-        nodes.forEach(elem => {
-            notUniquehouse_birth.push(elem.house_birth);
-        })
-        //deletes the duplicates
-        var house_birth = deleteDuplicates(notUniquehouse_birth);
-        console.log(house_birth);
-
         // Array of characters' house-marriage
         var notUniqueHouse_marriage = [];
         nodes.forEach(elem => {
@@ -59,7 +47,6 @@ function gotVis() {
         })
         //deletes the duplicates
         var house_marriage = deleteDuplicates(notUniqueHouse_marriage);
-        console.log(house_marriage);
         */
 
         // Force layout
@@ -148,23 +135,6 @@ function gotVis() {
             .style("fill", "#ccc")
             .attr('stroke', '#fff')
             .style("stroke-width", "2px");
-        
-        //Aggiunge un'immagine ai nodi 
-        /*node.append("image")
-            .attr("xlink:href", "../data/images/GoT_logo.png")
-            .attr("x", -25)
-            .attr("y", -25)
-            .attr("border-radius", "20px")
-            .attr("width", 50)
-            .attr("height", 50);*/
-
-        // Aggiunge dei riquadri al testo
-        /*var rect = node.append("rect")
-            .attr("x", 27)
-            .attr("y", -25)
-            .attr("height", "50px")
-            .attr("width", "250px")
-            .style("visibility", "hidden");*/
 
         var node_text = node.append("text")
             .attr("x", 30)
@@ -174,20 +144,28 @@ function gotVis() {
             .style("font-size", "25px")
             .style("visibility", "hidden");
 
-        /*var node_label = node.append("text")
-            .attr("x", -7.5)
-            .attr("dy", ".35em")
-            .text(function(d) { return d.name[0]; })
-            .style("fill", "grey")
-            .style("font-size", "25px");*/
-
         var nodeHouse = d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark")
             .append("text")
             .attr("class", "nodeHouseBirth")
             .attr("x", 45)
             .attr("y", 35)
-            .text(function(d) { 
-                return d.house_birth; })
+            .text(function(d) { if(d.house_birth != undefined) {
+                return "House-Birth: " + d.house_birth; }})
+            .style("fill", "white")
+            .style("font-size", "17px")
+            .style("visibility", "hidden");
+
+        var nodeHouseMarriage = d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark")
+            .append("text")
+            .attr("class", "nodeHouseMarriage")
+            .attr("x", 45)
+            .attr("y", function(d) {
+                if(d.house_birth == undefined)
+                    return 35;
+                else return 50
+            })
+            .text(function(d) { if (d.house_marriage != undefined){
+                return "House Marriage: " + d.house_marriage; }})
             .style("fill", "white")
             .style("font-size", "17px")
             .style("visibility", "hidden");
@@ -285,7 +263,7 @@ function gotVis() {
             
             if (element =="NightsWatch") {
                 svg.append('polygon')    
-                    .attr('points', "8,10 -8,10 -13,0 -8,-10 8,-10 13,0") //15,20 -15,20 -25,0 -15,-20 15,-20 25,0
+                    .attr('points', "8,10 -8,10 -13,0 -8,-10 8,-10 13,0")
                     .style("fill", "#ccc")
                     .attr('stroke', '#fff')
                     .style("stroke-width", "2px")
@@ -390,6 +368,9 @@ function mouseover() {
     d3.select(this).select(".nodeHouseBirth").transition()
         .delay(400)
         .style("visibility", "visible");
+    d3.select(this).select(".nodeHouseMarriage").transition()
+        .delay(400)
+        .style("visibility", "visible");
     d3.selectAll(linkCssClass)
         .classed("highlight", true)
         .transition()
@@ -417,6 +398,8 @@ function mouseout() {
         .attr("fill", "black")
         .style("font-size", "25px");
     d3.select(this).select(".nodeHouseBirth").transition()
+        .style("visibility", "hidden");
+    d3.select(this).select(".nodeHouseMarriage").transition()
         .style("visibility", "hidden");
     d3.selectAll(".link")
         .classed("highlight", false)
