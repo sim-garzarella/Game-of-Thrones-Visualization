@@ -8,6 +8,10 @@ var s, t = null;
 
 var legend_height = 50;
 
+var statusSelector = null;
+
+var status = null;
+
 function gotVis() {
 
     d3.json("../data/GoT.json", function(data) {
@@ -89,6 +93,9 @@ function gotVis() {
             .call(force.drag);
 
         svg.selectAll(".node").append("circle")
+            .attr("class", function(d) {
+                return d.status;
+            })
             .attr("r", 20)
             .style("fill", "#ccc")
             .style("stroke", "#fff")
@@ -97,6 +104,9 @@ function gotVis() {
         //Node shapes for different groups
         svg.selectAll(".nodeFreeFolk")
             .append('polygon')
+            .attr("class", function(d) {
+                return d.status;
+            })
             .attr('points', "25,20 0,-30 -25,20")
             .style("fill", "#ccc")
             .attr('stroke', '#fff')
@@ -104,6 +114,9 @@ function gotVis() {
 
         svg.selectAll(".nodeBrotherhoodWithoutBanners")
             .append('rect')
+            .attr("class", function(d) {
+                return d.status;
+            })
             .attr("x", -20)
             .attr("y", -20)
             .attr("height", "40px")
@@ -114,6 +127,9 @@ function gotVis() {
 
         svg.selectAll(".nodeNightsWatch")
             .append('polygon')
+            .attr("class", function(d) {
+                return d.status;
+            })
             .attr('points', "15,20 -15,20 -25,0 -15,-20 15,-20 25,0")
             .style("fill", "#ccc")
             .attr('stroke', '#fff')
@@ -121,6 +137,9 @@ function gotVis() {
 
         svg.selectAll(".nodeSandSnakes")
             .append('rect')
+            .attr("class", function(d) {
+                return d.status;
+            })
             .attr("x", -20)
             .attr("y", -30)
             .attr("height", "60px")
@@ -131,6 +150,9 @@ function gotVis() {
             
         svg.selectAll(".nodeHouseStark")
             .append('polygon')
+            .attr("class", function(d) {
+                return d.status;
+            })
             .attr('points', "25,0 0,25 -25,0 0,-25")
             .style("fill", "#ccc")
             .attr('stroke', '#fff')
@@ -150,7 +172,7 @@ function gotVis() {
             .attr("x", 45)
             .attr("y", 35)
             .text(function(d) { if(d.house_birth != undefined) {
-                return "House-Birth: " + d.house_birth; }})
+                return "Birth: " + d.house_birth; }})
             .style("fill", "white")
             .style("font-size", "17px")
             .style("visibility", "hidden");
@@ -165,7 +187,7 @@ function gotVis() {
                 else return 50
             })
             .text(function(d) { if (d.house_marriage != undefined){
-                return "House Marriage: " + d.house_marriage; }})
+                return "Marriage: " + d.house_marriage; }})
             .style("fill", "white")
             .style("font-size", "17px")
             .style("visibility", "hidden");
@@ -336,8 +358,57 @@ function gotVis() {
                 .on("mouseout", groupMouseout);    
 
             legend_height += 40;
-            }  
+            } 
         });
+
+        svg.append("rect")
+            .attr("x", 5)
+            .attr("y", legend_height +10)
+            .attr("height", "100px")
+            .attr("width", "240px")
+            .style("fill", "#4b493a")
+            .attr('stroke', 'black')
+            .attr('stroke-dasharray', '10,5')
+            .attr('stroke-linecap', 'butt')
+            .attr('stroke-width', '3');
+
+        legend_height += 40;
+
+        svg.append("circle")
+            .attr("r", 15)
+            .style("fill", "#ccc")
+            .style("stroke", "red")
+            .style("stroke-width", "2px")
+            .attr("transform", "translate(40 " + legend_height + ")");
+
+        svg.append("text")
+            .text("Deceased")
+            .attr("x", 80)
+            .attr("y", legend_height + 5)
+            .style("font-size", "23px")
+            .style("border", 0.5)
+            .style("fill", "#ccc")
+            .on("mouseover", statusMouseover)
+            .on("mouseout", statusMouseout);    
+
+        legend_height += 40;
+
+        svg.append("circle")
+            .attr("r", 15)
+            .style("fill", "#ccc")
+            .style("stroke", "green")
+            .style("stroke-width", "2px")
+            .attr("transform", "translate(40 " + legend_height + ")");
+
+        svg.append("text")
+            .text("Alive")
+            .attr("x", 80)
+            .attr("y", legend_height + 5)
+            .style("font-size", "23px")
+            .style("border", 0.5)
+            .style("fill", "#ccc")
+            .on("mouseover", statusMouseover)
+            .on("mouseout", statusMouseout);
     });
 
 }
@@ -417,20 +488,22 @@ function legend_mouseover() {
     d3.select(this)
         .style("stroke","black");
     d3.selectAll(".link." + relationLink)
-        .classed("highlight", true)
+        .classed("highlight", true);
+    d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark")
         .transition()
         .duration(400)
-        .style("opacity", "0.3");   
+        .style("opacity", "0.3");  
 }
 
 function legend_mouseout() {
     d3.select(this)
         .style("stroke","");
     d3.selectAll(".link")
-        .classed("highlight", false)
+        .classed("highlight", false);
+    d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark")
         .transition()
         .duration(400)
-        .style("opacity", "1");
+        .style("opacity", "1"); 
 }
 
 function groupMouseover() {
@@ -444,7 +517,8 @@ function groupMouseover() {
  
     d3.select(this)
         .style("fill","yellow");
-    d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark").transition()
+    d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark")
+        .transition()
         .duration(400)
         .style("opacity", "0.3");
     d3.selectAll(".node"+groupNode).transition()
@@ -474,6 +548,51 @@ function groupMouseout() {
         .duration(400)
         .attr("transform", "scale(1)")
         .style("stroke","white");
+}
+
+function statusMouseover() {
+
+    status = this.textContent;
+    if (status == "Alive") statusSelector = "Deceased"
+        else statusSelector ="Alive";
+
+    d3.select(this)
+        .style("fill","yellow");
+
+    d3.selectAll("." + statusSelector)
+        .transition()
+        .duration(400)
+        .style("opacity", "0.3");
+
+    d3.selectAll("." + status)
+        .style("opacity", "1")
+        .transition()
+        .duration(400)
+        .style("stroke", function()  {
+            if (status=="Alive") return "green";
+            else return "red";
+        })
+        .attr("transform", "scale(1.5)");
+}
+
+function statusMouseout() {
+    d3.select(this)
+        .style("fill","#ccc");
+
+    status = this.textContent;
+    if (status == "Alive") statusSelector = "Deceased"
+        else statusSelector ="Alive";
+
+    d3.selectAll("."+ statusSelector)
+        .transition()
+        .duration(400)
+        .style("opacity", "1");
+
+    d3.selectAll("." + status)
+        .transition()
+        .duration(400)
+        .attr("transform", "scale(1)")
+        .style("stroke", "#fff");
 }
 
 // Deletes duplicates in an array
