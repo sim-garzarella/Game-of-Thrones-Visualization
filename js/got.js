@@ -1,16 +1,12 @@
-var width = 1500;
+var width = 1850;
 var height = 900;
-
 var links = [];
 var nodes = [];
-
 var s, t = null;
-
 var legend_height = 50;
-
 var statusSelector = null;
-
 var status = null;
+var running = false;
 
 function gotVis() {
 
@@ -42,16 +38,6 @@ function gotVis() {
         })
         //deletes the duplicates
         var groups = deleteDuplicates(notUniqueGroups);
-
-        /*
-        // Array of characters' house-marriage
-        var notUniqueHouse_marriage = [];
-        nodes.forEach(elem => {
-            notUniqueHouse_marriage.push(elem.house_marriage);
-        })
-        //deletes the duplicates
-        var house_marriage = deleteDuplicates(notUniqueHouse_marriage);
-        */
 
         // Force layout
         var force = d3.layout.force()
@@ -96,7 +82,7 @@ function gotVis() {
             .attr("class", function(d) {
                 return d.status;
             })
-            .attr("r", 20)
+            .attr("r", 25)
             .style("fill", "#ccc")
             .style("stroke", "#fff")
             .style("stroke-width", "2px");
@@ -364,13 +350,23 @@ function gotVis() {
         svg.append("rect")
             .attr("x", 5)
             .attr("y", legend_height +10)
-            .attr("height", "100px")
+            .attr("height", "200px")
             .attr("width", "240px")
             .style("fill", "#4b493a")
             .attr('stroke', 'black')
             .attr('stroke-dasharray', '10,5')
             .attr('stroke-linecap', 'butt')
             .attr('stroke-width', '3');
+
+        legend_height += 50;
+
+        svg.append("text")
+            .text("Status")
+            .attr("x", 85)
+            .attr("y", legend_height)
+            .style("font-size", "30px")
+            .style("border", 0.5)
+            .style("fill", "white");
 
         legend_height += 40;
 
@@ -409,6 +405,26 @@ function gotVis() {
             .style("fill", "#ccc")
             .on("mouseover", statusMouseover)
             .on("mouseout", statusMouseout);
+    
+        legend_height += 40;
+
+        svg.append("circle")
+            .attr("r", 15)
+            .style("fill", "#ccc")
+            .style("stroke", "grey")
+            .style("stroke-width", "2px")
+            .attr("transform", "translate(40 " + legend_height + ")");
+
+        svg.append("text")
+            .text("Uncertain")
+            .attr("x", 80)
+            .attr("y", legend_height + 5)
+            .style("font-size", "23px")
+            .style("border", 0.5)
+            .style("fill", "#ccc")
+            .on("mouseover", statusMouseover)
+            .on("mouseout", statusMouseout);    
+
     });
 
 }
@@ -426,9 +442,10 @@ function mouseover() {
             if (d.status=="Alive") {
                 return "green";
             }
-            else {
+            if(d.status == "Deceased") {
                 return "red";
-            };
+            }
+            else return "grey";
         });
     var text = d3.select(this).select("text")
         .transition()
@@ -522,7 +539,7 @@ function groupMouseover() {
         .duration(400)
         .style("opacity", "0.3");
     d3.selectAll(".node"+groupNode).transition()
-        .duration(400)
+        .duration(0)
         .style("opacity", "1")
         .select("circle, rect, polygon").transition()
         .duration(400)
@@ -553,46 +570,63 @@ function groupMouseout() {
 function statusMouseover() {
 
     status = this.textContent;
-    if (status == "Alive") statusSelector = "Deceased"
-        else statusSelector ="Alive";
+    if (status == "Alive") statusSelector = ".Deceased, .Uncertain";
+    else if (status == "Deceased") statusSelector =".Alive, .Uncertain";
+    else statusSelector = ".Alive, .Deceased";
 
     d3.select(this)
         .style("fill","yellow");
 
-    d3.selectAll("." + statusSelector)
+    d3.selectAll(statusSelector)
         .transition()
+        .delay(function() {
+            if (running) {
+                return 400;
+            } else return 0;
+        }) 
         .duration(400)
-        .style("opacity", "0.3");
-
+        .style("opacity", "0.3")
+        .attr("transform", "scale(1)")
+        .style("stroke", "#fff");
+    
     d3.selectAll("." + status)
-        .style("opacity", "1")
         .transition()
+        .delay(function() {
+            if (running) {
+                return 400;
+            } else return 0;
+        })
         .duration(400)
+        .style("opacity", "1")
         .style("stroke", function()  {
             if (status=="Alive") return "green";
-            else return "red";
+            if (status=="Deceased") return "red";
+            else return "grey";
         })
         .attr("transform", "scale(1.5)");
 }
 
 function statusMouseout() {
+
+    status = this.textContent;
+    if (status == "Alive") statusSelector = ".Deceased, .Uncertain";
+    else if (status == "Deceased") statusSelector =".Alive, .Uncertain";
+    else statusSelector = ".Alive, .Deceased";
+
     d3.select(this)
         .style("fill","#ccc");
 
-    status = this.textContent;
-    if (status == "Alive") statusSelector = "Deceased"
-        else statusSelector ="Alive";
-
-    d3.selectAll("."+ statusSelector)
-        .transition()
-        .duration(400)
-        .style("opacity", "1");
-
-    d3.selectAll("." + status)
+    d3.selectAll(".Alive, .Deceased, .Uncertain")
         .transition()
         .duration(400)
         .attr("transform", "scale(1)")
-        .style("stroke", "#fff");
+        .style("stroke", "#fff")
+        .style("opacity", "1")
+        .each("start", function() {
+            running = true;
+        }).each("end", function() {
+            running = false;
+        });
 }
 
 // Deletes duplicates in an array
@@ -601,40 +635,5 @@ function deleteDuplicates(array) {
         return array.indexOf(item) == pos && item != undefined;
     })
 }
-
-//Applicando il filtro succedono i macelli
-function filterByGroup() {
-    nodes2 = nodes.filter(node => {
-        return node.group == "Brotherhood Without Banners";
-    });
-
-    links2 = links.filter(link => {
-        //return contains(link, nodes2);
-        s = link.source.id;
-        t = link.target.id;
-        return (nodes[s].group == "Brotherhood Without Banners" && nodes[t].group == "Brotherhood Without Banners");
-    });
-
-    console.log("ciao");
-}
-
-// Verifies if link's source and target are contained in the array of nodes 
-//VAFFANCULO FUNZIONE DI MERDA APPENA AVRò LA CERTEZZA CHE NON MI SERVI TI CANCELLO
-/*function contains(link, nodes) {
-    var test = false;
-
-    nodes.forEach(node1 => {
-        if (link.source == node1.id)  {
-            nodes.forEach(node2 => {
-                
-                if (link.target.id == node2.id)  {
-                    test = true;
-                }  
-            })
-        }
-    });
-
-    return test;
-}*/
 
 gotVis();
