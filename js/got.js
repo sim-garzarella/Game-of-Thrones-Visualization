@@ -1,5 +1,5 @@
-var width = 1850;
-var height = 900;
+var width = document.documentElement.clientWidth ;
+var height = "100%";
 var links = [];
 var nodes = [];
 var s, t = null;
@@ -39,20 +39,13 @@ function gotVis() {
         //deletes the duplicates
         var groups = deleteDuplicates(notUniqueGroups);
 
-        // Force layout
-        var force = d3.layout.force()
-            .nodes(d3.values(nodes))
-            .links(links)
-            .size([width, height])
-            .linkDistance(150)
-            .charge(-375)
-            .on("tick", tick)
-            .start(); 
+ 
         
         // Create the graph
         var svg = d3.select("body").append("svg")
-        .attr("width", width)
-        .attr("height", height); 
+        .attr("id", "graph")
+        //.attr("width", document.getElementById('graph').getBoundingClientRect())
+        //.attr("height", height); 
         var defs = svg.append('svg:defs');
         nodes.forEach(element => {
             defs.append('svg:pattern')
@@ -68,6 +61,19 @@ function gotVis() {
                 .attr('height', 1)
                 .attr("preserveAspectRatio","xMinYMin slice");
         });
+
+        var svgSize = document.getElementById('graph').getBoundingClientRect();
+        // Force layout
+        var force = d3.layout.force()
+        .nodes(d3.values(nodes))
+        .links(links)
+        .size([svgSize.width, svgSize.height])
+        .linkDistance(130)
+        .charge(-375)
+        .on("tick", tick)
+        .start();
+
+        console.log();
 
         var link = svg.selectAll(".link")
             .data(force.links())
@@ -110,7 +116,7 @@ function gotVis() {
             .attr("class", function(d) {
                 return d.status;
             })
-            .attr('points', "25,20 0,-30 -25,20")
+            .attr('points', "-30-25 0,30 30,-25")
             .style("fill",function(d) {
                 return "url(#image-" + d.id +")";
             })
@@ -124,8 +130,8 @@ function gotVis() {
             })
             .attr("x", -20)
             .attr("y", -20)
-            .attr("height", "40px")
-            .attr("width", "40px")
+            .attr("height", "55px")
+            .attr("width", "55px")
             .style("fill",function(d) {
                 return "url(#image-" + d.id +")";
             })
@@ -137,7 +143,7 @@ function gotVis() {
             .attr("class", function(d) {
                 return d.status;
             })
-            .attr('points', "15,20 -15,20 -25,0 -15,-20 15,-20 25,0")
+            .attr('points', "15,30 -15,30 -27,0 -15,-30 15,-30 27,0")
             .style("fill",function(d) {
                 return "url(#image-" + d.id +")";
             })
@@ -164,7 +170,7 @@ function gotVis() {
             .attr("class", function(d) {
                 return d.status;
             })
-            .attr('points', "25,0 0,25 -25,0 0,-25")
+            .attr('points', "33,0 0,33 -33,0 0,-33")
             .style("fill",function(d) {
                 return "url(#image-" + d.id +")";
             })
@@ -306,7 +312,7 @@ function gotVis() {
             }
             if (element =="FreeFolk") {
                 svg.append('polygon')
-                    .attr('points', "12,9 0,-12 -12,9")
+                    .attr('points', "-15,-13 0,15 15,-13")
                     .style("fill", "#ccc")
                     .attr('stroke', '#fff')
                     .style("stroke-width", "2px")
@@ -571,7 +577,12 @@ function groupMouseover() {
         .select("circle, rect, polygon").transition()
         .duration(400)
         .attr("transform", "scale(2)")
-        .style("stroke","black");
+        .style("stroke", function(d){
+            if (d.status=="Alive") return "green";
+            if (d.status=="Deceased") return "red";
+            else return "grey";
+        }
+        );
 }
 
 function groupMouseout() {
