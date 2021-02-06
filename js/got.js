@@ -47,12 +47,27 @@ function gotVis() {
             .linkDistance(150)
             .charge(-375)
             .on("tick", tick)
-            .start();  
+            .start(); 
         
         // Create the graph
         var svg = d3.select("body").append("svg")
-            .attr("width", width)
-            .attr("height", height); 
+        .attr("width", width)
+        .attr("height", height); 
+        var defs = svg.append('svg:defs');
+        nodes.forEach(element => {
+            defs.append('svg:pattern')
+                .attr('id', "image-" + element.id)
+                .attr('width', 1)
+                .attr('height', 1)
+                .attr("patternContentUnits", "objectBoundingBox")
+                .append('svg:image')
+                .attr('xlink:href', "../data/images/"+ element.id+ ".jpg")
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('width', 1)
+                .attr('height', 1)
+                .attr("preserveAspectRatio","xMinYMin slice");
+        });
 
         var link = svg.selectAll(".link")
             .data(force.links())
@@ -83,7 +98,9 @@ function gotVis() {
                 return d.status;
             })
             .attr("r", 25)
-            .style("fill", "#ccc")
+            .style("fill",function(d) {
+                return "url(#image-" + d.id +")";
+            })
             .style("stroke", "#fff")
             .style("stroke-width", "2px");
 
@@ -94,7 +111,9 @@ function gotVis() {
                 return d.status;
             })
             .attr('points', "25,20 0,-30 -25,20")
-            .style("fill", "#ccc")
+            .style("fill",function(d) {
+                return "url(#image-" + d.id +")";
+            })
             .attr('stroke', '#fff')
             .style("stroke-width", "2px");
 
@@ -107,7 +126,9 @@ function gotVis() {
             .attr("y", -20)
             .attr("height", "40px")
             .attr("width", "40px")
-            .style("fill", "#ccc")
+            .style("fill",function(d) {
+                return "url(#image-" + d.id +")";
+            })
             .attr('stroke', '#fff')
             .style("stroke-width", "2px");
 
@@ -117,7 +138,9 @@ function gotVis() {
                 return d.status;
             })
             .attr('points', "15,20 -15,20 -25,0 -15,-20 15,-20 25,0")
-            .style("fill", "#ccc")
+            .style("fill",function(d) {
+                return "url(#image-" + d.id +")";
+            })
             .attr('stroke', '#fff')
             .style("stroke-width", "2px");
 
@@ -130,7 +153,9 @@ function gotVis() {
             .attr("y", -30)
             .attr("height", "60px")
             .attr("width", "40px")
-            .style("fill", "#ccc")
+            .style("fill",function(d) {
+                return "url(#image-" + d.id +")";
+            })
             .attr('stroke', '#fff')
             .style("stroke-width", "2px");
             
@@ -140,7 +165,9 @@ function gotVis() {
                 return d.status;
             })
             .attr('points', "25,0 0,25 -25,0 0,-25")
-            .style("fill", "#ccc")
+            .style("fill",function(d) {
+                return "url(#image-" + d.id +")";
+            })
             .attr('stroke', '#fff')
             .style("stroke-width", "2px");
 
@@ -155,7 +182,7 @@ function gotVis() {
         var nodeHouse = d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark")
             .append("text")
             .attr("class", "nodeHouseBirth")
-            .attr("x", 45)
+            .attr("x", 65)
             .attr("y", 35)
             .text(function(d) { if(d.house_birth != undefined) {
                 return "Birth: " + d.house_birth; }})
@@ -166,7 +193,7 @@ function gotVis() {
         var nodeHouseMarriage = d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark")
             .append("text")
             .attr("class", "nodeHouseMarriage")
-            .attr("x", 45)
+            .attr("x", 65)
             .attr("y", function(d) {
                 if(d.house_birth == undefined)
                     return 35;
@@ -437,7 +464,7 @@ function mouseover() {
     d3.select(this).select("circle, rect, polygon")
         .transition()
         .duration(400)
-        .attr("transform", "scale(1.5)")
+        .attr("transform", "scale(2)")
         .style("stroke",function(d) {
             if (d.status=="Alive") {
                 return "green";
@@ -450,7 +477,7 @@ function mouseover() {
     var text = d3.select(this).select("text")
         .transition()
         .duration(400)
-        .attr("x","40")
+        .attr("x","60")
         .style("visibility", "visible")
         .style("font-size", "35px"); 
     d3.select(this).select(".nodeHouseBirth").transition()
@@ -470,7 +497,7 @@ function mouseover() {
         .style("opacity", "0.3");
     d3.select(this)
         .transition()
-        .duration(400)
+        .duration(0)
         .style("opacity", "1");
 }
   
@@ -543,7 +570,7 @@ function groupMouseover() {
         .style("opacity", "1")
         .select("circle, rect, polygon").transition()
         .duration(400)
-        .attr("transform", "scale(1.5)")
+        .attr("transform", "scale(2)")
         .style("stroke","black");
 }
 
