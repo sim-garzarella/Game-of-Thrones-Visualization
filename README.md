@@ -10,11 +10,15 @@ La visualizzazione consiste in un grafo, in cui i nodi rappresentano i personagg
 All'interno di ogni nodo è disponibile l'immagine identificativa del personaggio.
 I nodi hanno diverse forme che dipendono dal gruppo a cui i personaggi appartengono. Se essi non fanno parte di alcun gruppo allora i loro nodi avranno una forma di default (Cerchio).
 
+![Screenshot](data/images/Graph.png)
+
 Quando ci si posizione con il cursore del mouse su un nodo, tramite un'animazione vengono visualizzati il nome del personaggio, la casata di appartenenza (se c'è) e la casata acquisita tramite matrimonio (se c'è).
 Inoltre il contorno del nodo acquisisce il colore verde se il personaggio è vivo, il rosso se è morto e il grigio se la sua condizione non è certa.
 Infine gli archi incidenti sul nodo si colorano a seconda del tipo di relazione che il personaggio ha con i personaggi a cui è collegato.
 Per consentire al meglio la visualizzazione del personaggio corrente, il suo nodo viene ingrandito, mentre tutti gli altri vengono messi in trasparenza.
 Una volta che si sposta il cursore fuori dal nodo, il grafo torna alla sua forma originaria.
+
+![Screenshot](data/images/Node_Mouseover.png)
 
 Sul lato sinistro è disponibile una legenda interattiva, suddivisa in 3 parti:
 1) Relations: i tipi di relazione tra personaggi con i rispettivi colori. 
@@ -24,4 +28,4 @@ Sul lato sinistro è disponibile una legenda interattiva, suddivisa in 3 parti:
 3) Status: lo stato di vita dei personaggi.
 	   È possibile scorrere con il cursore del mouse sugli status, in questo modo i nodi relativi ai personaggi con quello status verranno evidenziati, mentre gli altri andranno in trasparenza.
 
-![Screenshot](data/images/Graph.png)
+![Screenshot](data/images/Legend_Mouseover.png)
