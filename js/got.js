@@ -513,7 +513,11 @@ function nodeMouseover() {
         .classed("highlight", true)
         .transition()
         .duration(400)
-        .style("opacity", "0.3");   
+        .style("opacity", "0.3")
+        .each("end", function(d) {
+            console.log(d);
+        })
+
     d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark")
         .transition()
         .duration(400)
