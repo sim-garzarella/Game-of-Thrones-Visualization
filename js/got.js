@@ -1,12 +1,11 @@
-var width = document.documentElement.clientWidth ;
-var height = "100%";
 var links = [];
 var nodes = [];
 var s, t = null;
-var legend_height = 50;
+var legend_height = 40;
 var statusSelector = null;
 var status = null;
 var running = false;
+var svgSize = null;
 
 function gotVis() {
 
@@ -27,7 +26,6 @@ function gotVis() {
         links.forEach(elem => {
             notUniqueRelations.push(elem.relation);
         })
-        //deletes the duplicates
         var relations = deleteDuplicates(notUniqueRelations);   
 
         
@@ -36,16 +34,11 @@ function gotVis() {
         nodes.forEach(elem => {
             notUniqueGroups.push(elem.group);
         })
-        //deletes the duplicates
         var groups = deleteDuplicates(notUniqueGroups);
-
- 
         
         // Create the graph
         var svg = d3.select("body").append("svg")
-        .attr("id", "graph")
-        //.attr("width", document.getElementById('graph').getBoundingClientRect())
-        //.attr("height", height); 
+            .attr("id", "graph")
         var defs = svg.append('svg:defs');
         nodes.forEach(element => {
             defs.append('svg:pattern')
@@ -54,7 +47,7 @@ function gotVis() {
                 .attr('height', 1)
                 .attr("patternContentUnits", "objectBoundingBox")
                 .append('svg:image')
-                .attr('xlink:href', "../data/images/"+ element.id+ ".jpg")
+                .attr('xlink:href', "../data/images/"+ element.id + ".jpg")
                 .attr('x', 0)
                 .attr('y', 0)
                 .attr('width', 1)
@@ -62,7 +55,8 @@ function gotVis() {
                 .attr("preserveAspectRatio","xMinYMin slice");
         });
 
-        var svgSize = document.getElementById('graph').getBoundingClientRect();
+        svgSize = document.getElementById('graph').getBoundingClientRect();
+
         // Force layout
         var force = d3.layout.force()
         .nodes(d3.values(nodes))
@@ -72,8 +66,6 @@ function gotVis() {
         .charge(-375)
         .on("tick", tick)
         .start();
-
-        console.log();
 
         var link = svg.selectAll(".link")
             .data(force.links())
@@ -95,10 +87,10 @@ function gotVis() {
             .attr("id", function(d) {
                 return "node-" + d.id;
             })
-            .on("mouseover",mouseover)
-            .on("mouseout", mouseout)
+            .on("mouseover",nodeMouseover)
+            .on("mouseout", nodeMouseout)
             .call(force.drag);
-
+        
         svg.selectAll(".node").append("circle")
             .attr("class", function(d) {
                 return d.status;
@@ -108,7 +100,7 @@ function gotVis() {
                 return "url(#image-" + d.id +")";
             })
             .style("stroke", "#fff")
-            .style("stroke-width", "2px");
+            .style("stroke-width", "1px");
 
         //Node shapes for different groups
         svg.selectAll(".nodeFreeFolk")
@@ -121,7 +113,7 @@ function gotVis() {
                 return "url(#image-" + d.id +")";
             })
             .attr('stroke', '#fff')
-            .style("stroke-width", "2px");
+            .style("stroke-width", "1px");
 
         svg.selectAll(".nodeBrotherhoodWithoutBanners")
             .append('rect')
@@ -136,7 +128,7 @@ function gotVis() {
                 return "url(#image-" + d.id +")";
             })
             .attr('stroke', '#fff')
-            .style("stroke-width", "2px");
+            .style("stroke-width", "1px");
 
         svg.selectAll(".nodeNightsWatch")
             .append('polygon')
@@ -148,7 +140,7 @@ function gotVis() {
                 return "url(#image-" + d.id +")";
             })
             .attr('stroke', '#fff')
-            .style("stroke-width", "2px");
+            .style("stroke-width", "1px");
 
         svg.selectAll(".nodeSandSnakes")
             .append('rect')
@@ -163,7 +155,7 @@ function gotVis() {
                 return "url(#image-" + d.id +")";
             })
             .attr('stroke', '#fff')
-            .style("stroke-width", "2px");
+            .style("stroke-width", "1px");
             
         svg.selectAll(".nodeHouseStark")
             .append('polygon')
@@ -175,9 +167,9 @@ function gotVis() {
                 return "url(#image-" + d.id +")";
             })
             .attr('stroke', '#fff')
-            .style("stroke-width", "2px");
+            .style("stroke-width", "1px");
 
-        var node_text = node.append("text")
+        node.append("text")
             .attr("x", 30)
             .attr("dy", ".35em")
             .text(function(d) { return d.name; })
@@ -185,10 +177,10 @@ function gotVis() {
             .style("font-size", "25px")
             .style("visibility", "hidden");
 
-        var nodeHouse = d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark")
+        d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark")
             .append("text")
             .attr("class", "nodeHouseBirth")
-            .attr("x", 65)
+            .attr("x", 85)
             .attr("y", 35)
             .text(function(d) { if(d.house_birth != undefined) {
                 return "Birth: " + d.house_birth; }})
@@ -196,10 +188,10 @@ function gotVis() {
             .style("font-size", "17px")
             .style("visibility", "hidden");
 
-        var nodeHouseMarriage = d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark")
+        d3.selectAll(".node , .nodeBrotherhoodWithoutBanners , .nodeNightsWatch , .nodeFreeFolk , .nodeSandSnakes , .nodeHouseStark")
             .append("text")
             .attr("class", "nodeHouseMarriage")
-            .attr("x", 65)
+            .attr("x", 85)
             .attr("y", function(d) {
                 if(d.house_birth == undefined)
                     return 35;
@@ -238,13 +230,21 @@ function gotVis() {
         
         svg.append("text")
             .text("Relations")
-            .attr("x", 65)
+            .attr("x", 72.5)
             .attr("y", legend_height)
-            .style("font-size", "30px")
+            .style("font-size", "25px")
             .style("border", 0.5)
             .style("fill", "white");
+    
+        svg.append('line')
+            .style("stroke", "white")
+            .style("stroke-width", 1)
+            .attr("x1", 25)
+            .attr("y1", legend_height + 5)
+            .attr("x2", 225)
+            .attr("y2", legend_height +5)
 
-        legend_height += 40;
+        legend_height += 35;
 
         relations.forEach(element => {
             svg.append("text")
@@ -252,17 +252,17 @@ function gotVis() {
                 .attr("class", "legend_" + element)
                 .attr("x", 25)
                 .attr("y", legend_height)
-                .style("font-size", "30px")
+                .style("font-size", "25px")
                 .style("border", 0.5)
-                .on("mouseover", legend_mouseover)
-                .on("mouseout", legend_mouseout);
+                .on("mouseover", relationMouseover)
+                .on("mouseout", relationMouseout);
 
-            legend_height += 40;
+            legend_height += 30
         });
 
         svg.append("rect")
             .attr("x", 5)
-            .attr("y", legend_height)
+            .attr("y", legend_height -10)
             .attr("height", "290px")
             .attr("width", "240px")
             .style("fill", "#4b493a")
@@ -271,17 +271,26 @@ function gotVis() {
             .attr('stroke-linecap', 'butt')
             .attr('stroke-width', '3');
 
-        legend_height += 40;
+        legend_height += 20;
 
         svg.append("text")
             .text("Groups")
-            .attr("x", 75)
+            .attr("x", 85)
             .attr("y", legend_height)
-            .style("font-size", "30px")
+            .style("font-size", "25px")
             .style("border", 0.5)
             .style("fill", "white");
 
-        legend_height += 40;
+        svg.append('line')
+            .style("stroke", "white")
+            .style("stroke-width", 1)
+            .attr("x1", 25)
+            .attr("y1", legend_height + 5)
+            .attr("x2", 225)
+            .attr("y2", legend_height +5)
+
+
+        legend_height += 30;
 
         groups.forEach(element => {
 
@@ -295,8 +304,8 @@ function gotVis() {
                 svg.append('rect')
                     .attr("x", 30)
                     .attr("y", recttHeight + 10)
-                    .attr("height", "20px")
-                    .attr("width", "20px")
+                    .attr("height", "25px")
+                    .attr("width", "25px")
                     .style("fill", "#ccc")
                     .attr('stroke', '#fff')
                     .style("stroke-width", "2px");
@@ -304,11 +313,11 @@ function gotVis() {
             
             if (element =="NightsWatch") {
                 svg.append('polygon')    
-                    .attr('points', "8,10 -8,10 -13,0 -8,-10 8,-10 13,0")
+                    .attr('points', "8,13 -8,13 -13,0 -8,-13 8,-13 13,0")
                     .style("fill", "#ccc")
                     .attr('stroke', '#fff')
                     .style("stroke-width", "2px")
-                    .attr("transform", "translate(40 " + polygontHeight + ")");
+                    .attr("transform", "translate(42.5 " + polygontHeight + ")");
             }
             if (element =="FreeFolk") {
                 svg.append('polygon')
@@ -316,11 +325,11 @@ function gotVis() {
                     .style("fill", "#ccc")
                     .attr('stroke', '#fff')
                     .style("stroke-width", "2px")
-                    .attr("transform", "translate(40 " + polygontHeight + ")");
+                    .attr("transform", "translate(42.5 " + polygontHeight + ")");
             }
             if (element =="SandSnakes") {
                 svg.append('rect')
-                    .attr("x", 32)
+                    .attr("x", 35)
                     .attr("y", recttHeight)
                     .attr("height", "25px")
                     .attr("width", "15px")
@@ -334,7 +343,7 @@ function gotVis() {
                     .style("fill", "#ccc")
                     .attr('stroke', '#fff')
                     .style("stroke-width", "2px")
-                    .attr("transform", "translate(40 " + polygontHeight + ")");
+                    .attr("transform", "translate(42.5 " + polygontHeight + ")");
             }
 
             if (element == "BrotherhoodWithoutBanners") {
@@ -382,8 +391,8 @@ function gotVis() {
 
         svg.append("rect")
             .attr("x", 5)
-            .attr("y", legend_height +10)
-            .attr("height", "200px")
+            .attr("y", legend_height -15)
+            .attr("height", "170px")
             .attr("width", "240px")
             .style("fill", "#4b493a")
             .attr('stroke', 'black')
@@ -391,17 +400,25 @@ function gotVis() {
             .attr('stroke-linecap', 'butt')
             .attr('stroke-width', '3');
 
-        legend_height += 50;
+        legend_height += 20;
 
         svg.append("text")
             .text("Status")
-            .attr("x", 85)
+            .attr("x", 90)
             .attr("y", legend_height)
-            .style("font-size", "30px")
+            .style("font-size", "25px")
             .style("border", 0.5)
             .style("fill", "white");
 
-        legend_height += 40;
+        svg.append('line')
+            .style("stroke", "white")
+            .style("stroke-width", 1)
+            .attr("x1", 25)
+            .attr("y1", legend_height + 5)
+            .attr("x2", 225)
+            .attr("y2", legend_height +5)
+
+        legend_height += 27;
 
         svg.append("circle")
             .attr("r", 15)
@@ -413,7 +430,7 @@ function gotVis() {
         svg.append("text")
             .text("Deceased")
             .attr("x", 80)
-            .attr("y", legend_height + 5)
+            .attr("y", legend_height + 10)
             .style("font-size", "23px")
             .style("border", 0.5)
             .style("fill", "#ccc")
@@ -432,7 +449,7 @@ function gotVis() {
         svg.append("text")
             .text("Alive")
             .attr("x", 80)
-            .attr("y", legend_height + 5)
+            .attr("y", legend_height + 10)
             .style("font-size", "23px")
             .style("border", 0.5)
             .style("fill", "#ccc")
@@ -451,7 +468,7 @@ function gotVis() {
         svg.append("text")
             .text("Uncertain")
             .attr("x", 80)
-            .attr("y", legend_height + 5)
+            .attr("y", legend_height + 10)
             .style("font-size", "23px")
             .style("border", 0.5)
             .style("fill", "#ccc")
@@ -459,10 +476,9 @@ function gotVis() {
             .on("mouseout", statusMouseout);    
 
     });
-
 }
 
-function mouseover() {
+function nodeMouseover() {
     var thisNode = d3.select(this);
     var nodeId = thisNode.attr("id").toString().replace("node-", "");
     var linkCssClass = ".link.s" + nodeId + ",.link.t" + nodeId;
@@ -479,13 +495,14 @@ function mouseover() {
                 return "red";
             }
             else return "grey";
-        });
-    var text = d3.select(this).select("text")
+        })
+        .style("stroke-width", "2px");
+    d3.select(this).select("text")
         .transition()
         .duration(400)
-        .attr("x","60")
+        .attr("x","80")
         .style("visibility", "visible")
-        .style("font-size", "35px"); 
+        .style("font-size", "40px"); 
     d3.select(this).select(".nodeHouseBirth").transition()
         .delay(400)
         .style("visibility", "visible");
@@ -503,15 +520,16 @@ function mouseover() {
         .style("opacity", "0.3");
     d3.select(this)
         .transition()
-        .duration(0)
+        .duration(400)
         .style("opacity", "1");
 }
   
-function mouseout() {
+function nodeMouseout() {
     d3.select(this).select("circle, rect, polygon").transition()
         .duration(400)
         .attr("transform", "scale(1)")
-        .style("stroke","white");
+        .style("stroke","white")
+        .style("stroke-width", "1px");
     d3.select(this).select("text").transition()
         .duration(400)
         .attr("x","30")
@@ -533,7 +551,7 @@ function mouseout() {
         .style("opacity", "1");
 }
 
-function legend_mouseover() {
+function relationMouseover() {
     var relationLink = this.textContent.toLowerCase();
     d3.select(this)
         .style("stroke","black");
@@ -545,7 +563,7 @@ function legend_mouseover() {
         .style("opacity", "0.3");  
 }
 
-function legend_mouseout() {
+function relationMouseout() {
     d3.select(this)
         .style("stroke","");
     d3.selectAll(".link")
@@ -582,7 +600,8 @@ function groupMouseover() {
             if (d.status=="Deceased") return "red";
             else return "grey";
         }
-        );
+        )
+        .style("stroke-width", "2px");
 }
 
 function groupMouseout() {
@@ -602,7 +621,8 @@ function groupMouseout() {
         .select("circle, rect, polygon").transition()
         .duration(400)
         .attr("transform", "scale(1)")
-        .style("stroke","white");
+        .style("stroke","white")
+        .style("stroke-width", "1px");
 }
 
 function statusMouseover() {
@@ -641,7 +661,8 @@ function statusMouseover() {
             if (status=="Deceased") return "red";
             else return "grey";
         })
-        .attr("transform", "scale(1.5)");
+        .attr("transform", "scale(1.5)")
+        .style("stroke-width", "2px");
 }
 
 function statusMouseout() {
@@ -664,7 +685,8 @@ function statusMouseout() {
             running = true;
         }).each("end", function() {
             running = false;
-        });
+        })
+        .style("stroke-width", "1px");
 }
 
 // Deletes duplicates in an array
