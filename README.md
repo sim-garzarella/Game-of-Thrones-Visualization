@@ -23,3 +23,5 @@ Sul lato sinistro è disponibile una legenda interattiva, suddivisa in 3 parti:
 	   È possibile scorrere con il cursore del mouse sui gruppi, in questo modo i nodi relativi ai personaggi appartenenti a tali gruppi verranno evidenziati, mentre gli altri andranno in trasparenza.
 3) Status: lo stato di vita dei personaggi.
 	   È possibile scorrere con il cursore del mouse sugli status, in questo modo i nodi relativi ai personaggi con quello status verranno evidenziati, mentre gli altri andranno in trasparenza.
+
+![Screenshot](data/images/Graph.png)
